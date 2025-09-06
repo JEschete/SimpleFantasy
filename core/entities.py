@@ -6,6 +6,7 @@ from core.quest import QuestManager
 import random
 
 CLASS_ALLOWED_SCHOOLS = {
+    # Empty sets mean physical classes with no arcane schools.
     "BLACK_MAGE": {"BLACK"},
     "WHITE_MAGE": {"WHITE"},
     "FIGHTER": set(),      # no magic
@@ -180,6 +181,7 @@ class Hero:
         return self.can_learn_spell(sp)
 
     def prune_illegal_spells(self):
+        # Drops spells outside permitted school set.
         self.known_spells = [s for s in self.known_spells if self.can_cast(s)]
 
     def to_companion_dict(self):

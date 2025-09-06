@@ -3,6 +3,7 @@ from settings import draw_text, WHITE, SILVER, GOLD, RED, FONT, FONT_BIG, SCREEN
 
 # Second numeric (legacy base cost) kept but ignored; real cost is dynamic via game.get_next_hire_cost().
 HIRE_OPTIONS = [
+    # Cost column kept for flavor; live cost computed from party size.
     ("FIGHTER", 150, "Front-line power."),
     ("BLACK_MAGE", 160, "Offensive magic."),
     ("WHITE_MAGE", 160, "Healing magic."),
@@ -45,8 +46,13 @@ class Tavern:
         draw_text(surf, f"Gil: {self.g.hero.gil}  (Next Hire: {next_cost} Gil)", x, y, GOLD, FONT); y += 26
         draw_text(surf, f"Party {len(self.g.party)}/4", self.rect.x + 360, self.rect.y + 16, SILVER, FONT)
 
+        options_start_y = self.rect.y + 70  # fixed anchor for option list
+
         if len(self.g.party) >= 4:
-            draw_text(surf, "Party is full. ESC/Y to close.", self.rect.x + 18, self.rect.y + 70, SILVER, FONT)
+            # Party full: show message at options area and hint below
+            draw_text(surf, "Party is full. ESC/Y to close.", x, options_start_y, SILVER, FONT)
+            hint_y = options_start_y + 34
+            draw_text(surf, "Y/ESC close", x, hint_y, SILVER, FONT)
             return
 
         hero_gil = self.g.hero.gil
@@ -64,9 +70,10 @@ class Tavern:
                 surf,
                 f"{'> ' if sel else '  '}{cls:<11} {status:<10} {desc}",
                 self.rect.x + 22,
-                self.rect.y + 70 + i*24,
+                options_start_y + i*24,
                 col,
                 FONT
             )
-        y += 12
-        draw_text(surf, "UP/DOWN select  ENTER hire  Y/ESC close", x, y, SILVER, FONT)
+        # Controls hint positioned after last option (+ padding)
+        hint_y = options_start_y + len(HIRE_OPTIONS)*24 + 12
+        draw_text(surf, "UP/DOWN select  ENTER hire  Y/ESC close", x, hint_y, SILVER, FONT)

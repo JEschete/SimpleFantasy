@@ -124,6 +124,7 @@ class InputController:
             return
 
         if key == pygame.K_i:
+            # Force merge inventories before opening shared pool UI.
             if g.shop.opened: g.shop.close()
             # NEW: unify party inventory into leader before showing UI
             g.unify_party_inventory()

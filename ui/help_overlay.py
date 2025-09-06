@@ -42,6 +42,7 @@ class HelpOverlay:
         self.rect = pg.Rect((SCREEN_W - w)//2, (SCREEN_H - 520)//2, w, 520)  # height recomputed each draw
 
     def _compute_wrapped(self):
+        # Headings (ending with ':') kept single line; others wrapped to panel width.
         inner_w = self.rect.w - self.side_pad*2
         wrapped = []
         for raw in HELP_LINES:

@@ -14,6 +14,7 @@ def damage_from_attack(attacker_atk, defender_def):
 
 class Battle:
     def __init__(self, hero, encounter_level):
+        # Encounter composition tuned by hero level & party maturity.
         self.hero = hero
         self.turn = "PLAYER"
         self.log = []
@@ -128,6 +129,7 @@ class Battle:
         return self.party[self.active_index]
 
     def _rebuild_root_menu(self):
+        # Menu rebuilt per active actor; hides unusable branches.
         a = self.active_actor
         items = ["Attack"]
         # Steal only if Thief (already enforced) — unchanged.
@@ -182,6 +184,7 @@ class Battle:
 
     # --- party flow helpers ---
     def _advance_turn(self):
+        # Rotates through living party; wraps to enemy phase when hero cycles.
         # If enemies all dead -> end
         if not self.alive_enemies():
             self.turn = "ENEMY"  # triggers end sequence path
@@ -258,6 +261,7 @@ class Battle:
 
     # --- NEW: steal attempt (THIEF only) ---
     def player_steal(self):
+        # Weighted table roll merges consumable + equipment loot pools.
         a = self.active_actor
         if a.hero_class != "THIEF":
             self.log.append("Cannot Steal.")
@@ -376,6 +380,7 @@ class Battle:
 
     # enemies_turn modified to target any living party member
     def enemies_turn(self):
+        # Each living enemy picks a random living party target.
         total_log = []
         for e in self.alive_enemies():
             if not self._party_alive(): break
@@ -521,6 +526,7 @@ class Battle:
             self.end_turn_sequence()
 
     def end_turn_sequence(self):
+        # On victory: loot once; fleeing skips rewards.
         if self.alive_enemies():
             self.enemies_turn()
         else:

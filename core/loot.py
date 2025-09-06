@@ -28,6 +28,7 @@ GOLD_ROLL = {
 }
 
 def roll_loot(enemies):
+    # Equipment rolls may produce affixed variants via generate_affixed_equipment.
     items = {}
     gold = 0
     for e in enemies:

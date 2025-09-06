@@ -47,6 +47,8 @@ class ShopUI:
         self.add_gold = lambda n: None
         # buyer callback: f(item_id, qty)->bool
         self.try_add_to_inventory = None
+        self._hover_item_id: Optional[str] = None    # NEW
+        self._hover_mouse: Tuple[int,int] = (0,0)    # NEW
 
     def set_stock(self, item_ids: List[str]):
         self.stock = item_ids[:self.cols*self.rows]
@@ -157,6 +159,12 @@ class ShopUI:
                     surf.blit(self._icon(iid), cell)
         # dragged from shop
         self.drag.draw(surf, pg.mouse.get_pos())
-        # tooltip last (above drag icon)
-        if hover_item:
-            self._draw_tooltip(surf, mouse, hover_item)
+        # NEW: store hover state instead of drawing tooltip now
+        self._hover_item_id = hover_item
+        self._hover_mouse = mouse
+        # (tooltip removed here; drawn later by Shop.draw)
+
+    # NEW: separate tooltip draw so caller can control layering
+    def draw_tooltip(self, surf: pg.Surface):
+        if self._hover_item_id:
+            self._draw_tooltip(surf, self._hover_mouse, self._hover_item_id)

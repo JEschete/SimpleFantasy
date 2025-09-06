@@ -51,7 +51,7 @@ class Game:
         self.exit_confirm_until = 0.0
         self.hud_rect = pygame.Rect(12, 6, 480, 54)
 
-        # NEW: overworld death state flag
+        # overworld KO flag (outside battle)
         self.hero_dead = False
 
         # Wire shop / inventory
@@ -145,7 +145,7 @@ class Game:
         self.inv_ui.hero = self.hero
         self.char_sheet.hero = self.hero
         self.journal.hero = self.hero
-        # --- NEW: refresh UIs so class / party layout reflect loaded data ---
+        # --- refresh UIs so class / party layout reflect loaded data ---
         self.inv_ui.refresh_party_layout()
         self.party_ui.sync_from_party()
         if hasattr(self.overworld, "set_toast"): self.overworld.set_toast(msg)
@@ -199,7 +199,7 @@ class Game:
                 if (g.pos.x-self.hero.x)**2 + (g.pos.y-self.hero.y)**2 <= 110*110:
                     self._pickup_ground_at((int(g.pos.x), int(g.pos.y)))
 
-        # --- NEW: update death state outside battle ---
+        # --- update death state outside battle ---
         if not self.battle and self.state == "OVERWORLD":
             self.hero_dead = (self.hero.hp <= 0)
         else:
@@ -222,7 +222,7 @@ class Game:
             if self.tavern_open: self.tavern.draw(self.screen)
             if self.party_open: self.party_ui.draw(self.screen)
             self._draw_overworld_stats_hud()
-            # NEW: death overlay (draw after HUD so it sits on top)
+            # death overlay (draw after HUD so it sits on top)
             if self.hero_dead:
                 self._draw_death_overlay()
         else:
@@ -232,7 +232,7 @@ class Game:
     def _draw_overworld_stats_hud(self):
         if self.inv_open or self.char_open or self.journal_open or self.shop.opened: return
         h = self.hero; r = self.hud_rect
-        # NEW: build first line with hero name
+        # build first line with hero name
         line1 = f"{h.name} Lv {h.level()}  HP {h.hp}/{h.max_hp()}  MP {h.mp}/{h.max_mp()}"
         needed_w = FONT_BIG.size(line1)[0] + 32
         if needed_w > r.w:
@@ -245,7 +245,7 @@ class Game:
                   r.x + 10, r.y + 30, GOLD, FONT)
 
     def _draw_death_overlay(self):
-        """Semi-transparent panel prompting reload/new game when leader is KO outside battle."""
+        """Simple fail state outside battle; lets player revive via potion or reload."""
         surf = self.screen
         w, h = 520, 200
         rect = pygame.Rect((SCREEN_W - w)//2, (SCREEN_H - h)//2, w, h)

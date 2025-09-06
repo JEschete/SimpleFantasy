@@ -12,7 +12,7 @@ def _slot_path(slot: int) -> str:
     return SAVE_SLOTS.get(slot, SAVE_SLOTS[1])
 
 def _collect_dynamic_items(hero):
-    """Collect dynamic (affixed) items across whole party."""
+    """Snapshot stat-modified (affixed) item defs so they survive reload."""
     needed_ids = set()
     party = getattr(hero, "party", [hero])
     for member in party:
@@ -39,6 +39,7 @@ def _collect_dynamic_items(hero):
     return out
 
 def _rebuild_dynamic_items(dynamic_list):
+    """Re-register dynamic gear definitions absent from static registry."""
     for d in dynamic_list:
         iid = d["id"]
         if iid in ITEMS:  # already present

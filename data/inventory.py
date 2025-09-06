@@ -2,7 +2,7 @@ from settings import *
 from data.spells import get_spell
 import random as _rnd
 
-EQUIP_SLOTS = ["weapon","helm","armor","shield"]
+EQUIP_SLOTS = ["weapon","helm","armor","shield"]  # Shield doubles as offhand for Thief
 
 class ItemDef:
     def __init__(self, id, name, kind, price=10, desc="", slot=None,
@@ -123,6 +123,7 @@ def _pick_affix(table):
     return None
 
 def generate_affixed_equipment(base_id: str) -> str:
+    """Create (or reuse) a composite id for prefixed/suffixed gear."""
     base = ITEMS[base_id]
     if base.kind != "equipment":
         return base_id

@@ -17,7 +17,7 @@ class StartScreen:
         self.cached_saves = self.saves  # NEW alias to satisfy legacy references
         self._req_new_game: 'None | tuple[str,str,int|None]' = None  # CHANGED: always triple
         self._req_load_slot = None
-        self.slot_index = 0          # NEW: slot picker index
+        self.slot_index = 0          # current highlighted save slot (new game)
 
     # ----- requests -----
     def consume_new_game_request(self) -> 'None | tuple[str,str,int|None]':  # CHANGED annotation

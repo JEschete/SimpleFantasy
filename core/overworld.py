@@ -75,10 +75,7 @@ class Overworld:
             self._encounter_cooldown = max(0.0, self._encounter_cooldown - dt)
 
     def maybe_encounter(self):
-        """
-        Called from main loop after update(). Returns a Battle or None.
-        Requires: moving, within grass, and cooldown elapsed.
-        """
+        """Single poll chance while moving in grass and cooldown expired."""
         if self._encounter_cooldown > 0:
             return None
         # Check if hero is in grass
@@ -123,6 +120,9 @@ class Overworld:
             pad = 10
             msg_w = FONT_BIG.size(self.toast)[0] + pad * 2
             x = PANEL_MARGIN
+            y = SCREEN_H - LOG_HEIGHT - 18 - 40
+            pygame.draw.rect(surf, (20, 20, 26), (x, y, msg_w, 36), border_radius=8)
+            draw_text(surf, self.toast, x + pad, y + 8, WHITE, FONT_BIG)
             y = SCREEN_H - LOG_HEIGHT - 18 - 40
             pygame.draw.rect(surf, (20, 20, 26), (x, y, msg_w, 36), border_radius=8)
             draw_text(surf, self.toast, x + pad, y + 8, WHITE, FONT_BIG)

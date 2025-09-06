@@ -75,7 +75,7 @@ class InventoryUI:
     and hero.equipment transparently.
     """
     def __init__(self, hero, pos: Vec2=(24,24), cols: int=8, rows: int=4):
-        # ...existing initial field setup unchanged until layout pieces...
+        # Paper dolls + shared grid
         self.hero = hero
         self.grid = GridInventoryUI(cols, rows)
         self.pos = pos
@@ -83,7 +83,7 @@ class InventoryUI:
         self._doll_w = 200
         self._doll_gap = 24
         self.stat_sheet_w = 210
-        self.selected_member_index = 0  # NEW: which party member stats are shown
+        self.selected_member_index = 0   # active stat focus
 
         # placeholder rects (real sizes set in refresh_party_layout)
         self.rect = pg.Rect(pos[0], pos[1], 800, 480)
@@ -117,6 +117,7 @@ class InventoryUI:
 
     # --- NEW: dynamic layout based on party size ---
     def refresh_party_layout(self):
+        """Recompute panels when party size changes."""
         party = getattr(self.hero, "party", [self.hero])
         party_size = len(party)
         cols = self.grid.cols
@@ -172,9 +173,7 @@ class InventoryUI:
         return None
 
     def _equip_slot_at(self, mouse: Vec2):
-        """Return (member_index, slot_index, rect) if mouse over an equipment slot, else None.
-        Uses identical geometry to draw() so hit areas align perfectly.
-        """
+        """Precise hit test using same math as draw()."""
         party = getattr(self.hero, "party", [self.hero])
         for m_idx, doll in enumerate(self.paper_rects):
             if not doll.collidepoint(mouse):
@@ -231,6 +230,7 @@ class InventoryUI:
 
     # --- NEW: restored drop handler (was missing) ---
     def _drop_payload(self, mouse: Vec2):
+        """Finalize a drag: try equip, else inventory, else shop, else drop."""
         p = self.drag.end()
         if not p: return
         party = getattr(self.hero, "party", [self.hero])
@@ -279,6 +279,7 @@ class InventoryUI:
 
     # --- NEW: double-click use/equip logic ---
     def _try_use_slot_item(self, idx: int):
+        """Double‑click consumption / equip (supports Thief offhand logic)."""
         if idx < 0 or idx >= len(self.grid.slots): return
         slot = self.grid.slots[idx]
         if not slot.id: return
@@ -323,6 +324,7 @@ class InventoryUI:
 
     # --- NEW: tooltip helper ---
     def _build_tooltip_lines(self, item_id: str) -> List[str]:
+        """Minimal info: name, stats, desc, value."""
         idef = ITEMS[item_id]
         lines = [idef.name]
         if idef.kind == "equipment":
@@ -408,6 +410,7 @@ class InventoryUI:
 
     # ----- hover gather extended to all dolls -----
     def _gather_hover(self):
+        # Limit to one target per frame.
         if self.drag.payload: return
         mouse = pg.mouse.get_pos()
         gs = self._grid_slot_at(mouse)
@@ -436,34 +439,65 @@ class InventoryUI:
         if self.selected_member_index >= len(party):
             self.selected_member_index = 0
         h = party[self.selected_member_index]
-        pg.draw.rect(surf, (28,28,38), self.stats_rect, border_radius=10)
-        pg.draw.rect(surf, (64,64,80), self.stats_rect, 1, border_radius=10)
-        x = self.stats_rect.x + 12
-        y = self.stats_rect.y + 12
-        draw_text(surf, f"Stats: {h.name}", x, y, GOLD); y += 26
-        def ln(label, base, total):
+
+        # Collect lines first for dynamic sizing
+        lines = []
+        lines.append(("title", f"Stats: {h.name}"))
+        # (Hint removed from here; placed in footer instead)
+
+        def fmt(label, base, total):
             gear = total - base
-            draw_text(surf, f"{label}: {total} ({base}{'+'+str(gear) if gear>0 else ''})", x, y, WHITE)
-        ln("ATK", h.base_attack, h.attack()); y += 18
-        ln("MAG", h.base_magic, h.magic()); y += 18
-        ln("DEF", h.base_defense, h.defense()); y += 18
-        ln("AGI", h.base_agility, h.agility()); y += 22
+            return f"{label}: {total} ({base}{'+'+str(gear) if gear>0 else ''})"
+        lines.append(("stat", fmt("ATK", h.base_attack, h.attack())))
+        lines.append(("stat", fmt("MAG", h.base_magic, h.magic())))
+        lines.append(("stat", fmt("DEF", h.base_defense, h.defense())))
+        lines.append(("stat", fmt("AGI", h.base_agility, h.agility())))
+
+        # Resist lines
         res_labels = ["FIRE","ICE","ELECTRIC","POISON"]
-        shown = False
-        for rname in res_labels:
-            val = h.resistance(rname)
-            if val:
-                if not shown:
-                    draw_text(surf, "Resists:", x, y, SILVER); y += 18
-                    shown = True
-                draw_text(surf, f" {rname[:3]} {val:+d}%", x+4, y, WHITE); y += 18
-        if not shown:
-            draw_text(surf, "Resists: (none)", x, y, SILVER); y += 18
-        y += 6
-        draw_text(surf, f"Talent Pts: {h.talent_points}", x, y, GOLD)
+        resist_vals = [(r, h.resistance(r)) for r in res_labels if h.resistance(r)]
+        if resist_vals:
+            lines.append(("heading", "Resists:"))
+            for r, v in resist_vals:
+                lines.append(("res", f" {r[:3]} {v:+d}%"))
+        else:
+            lines.append(("heading", "Resists: (none)"))
+
+        lines.append(("tp", f"Talent Pts: {h.talent_points}"))
+
+        # Dynamic height calculation
+        pad_x = 12
+        pad_y = 12
+        line_gap = 18
+        title_extra = 8
+        height = pad_y  # top pad
+        for kind, _ in lines:
+            if kind == "title":
+                height += 26
+            else:
+                height += line_gap
+        height += 8  # bottom pad
+
+        # Draw dynamic panel (do not alter global layout rect)
+        panel_rect = pg.Rect(self.stats_rect.x, self.stats_rect.y, self.stats_rect.w, height)
+        pg.draw.rect(surf, (28,28,38), panel_rect, border_radius=10)
+        pg.draw.rect(surf, (64,64,80), panel_rect, 1, border_radius=10)
+
+        x = panel_rect.x + pad_x
+        y = panel_rect.y + pad_y
+        for kind, text in lines:
+            if kind == "title":
+                draw_text(surf, text, x, y, GOLD); y += 26
+            elif kind == "heading":
+                draw_text(surf, text, x, y, SILVER); y += line_gap
+            elif kind == "tp":
+                draw_text(surf, text, x, y, GOLD); y += line_gap
+            else:
+                draw_text(surf, text, x, y, WHITE); y += line_gap
 
     # ----- draw with multiple paper dolls -----
     def draw(self, surf: pg.Surface):
+        """Grid, dolls, stats, footer, drag + tooltip."""
         self._gather_hover()
         draw_panel(surf, self.rect, "Inventory (Shared)")
         # Inventory grid
@@ -504,10 +538,10 @@ class InventoryUI:
                 lx = rrect.centerx - FONT.size(label)[0] // 2
                 draw_text(surf, label, lx, rrect.bottom + 4, SILVER)
 
-        # Stat sheet (selected member)
+        # Stat sheet
         self._draw_stat_sheet(surf)
 
-        # Footer (shared inventory summary uses leader stats)
+        # Footer (shared inventory summary)
         pg.draw.line(surf, (70,70,88), (self.rect.x + 10, self.footer_y - 6),
                      (self.rect.right - 10, self.footer_y - 6), 1)
         lead = self.hero
@@ -515,6 +549,13 @@ class InventoryUI:
         summary2 = f"ATK {lead.attack()}  MAG {lead.magic()}  DEF {lead.defense()}   Gil {lead.gil}"
         draw_text(surf, summary1, self.rect.x + 14, self.footer_y, WHITE)
         draw_text(surf, summary2, self.rect.x + 14, self.footer_y + 18, GOLD)
+
+        # Moved party-switch hint to bottom
+        party = getattr(self.hero, "party", [self.hero])
+        if len(party) > 1:
+            draw_text(surf,
+                      "Click a party member name above to view their stats.",
+                      self.rect.x + 14, self.footer_y + 18 + 20, SILVER)
 
         # Drag payload
         self.drag.draw(surf, pg.mouse.get_pos())

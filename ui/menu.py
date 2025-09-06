@@ -2,6 +2,7 @@ import pygame
 from settings import *
 
 class Menu:
+    # Simple vertical cursor menu; caller owns semantics.
     def __init__(self, x, y, w, items, title=None):
         self.x, self.y, self.w = x, y, w
         self.items = items[:]  # list of strings

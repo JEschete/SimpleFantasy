@@ -15,6 +15,7 @@ class TalentOverlay:
         self.mast_index = 0
 
     def handle_key(self, key):
+        # Toggle section with TAB; indices wrap.
         if key in (pg.K_TAB,):
             self.cursor_section = 1 - self.cursor_section
         elif self.cursor_section == 0:

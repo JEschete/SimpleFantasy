@@ -14,7 +14,7 @@ def draw_panel(surf: pg.Surface, rect: pg.Rect, title: Optional[str] = None):
         draw_text(surf, title, rect.x + 8, rect.y - 22, SILVER)
 
 class Draggable:
-    """Generic drag payload carried by the mouse."""
+    """Stores a lifted payload (icon + metadata) until released or cancelled."""
     def __init__(self):
         self.payload: Optional[Dict[str, Any]] = None
         self.offset = (0, 0)

@@ -8,6 +8,7 @@ class CharacterSheet:
         self.rect = pg.Rect(PANEL_MARGIN, 90, 560, 380)
 
     def draw(self, surf):
+        # Linear stat list; no paging needed yet.
         pg.draw.rect(surf, (24,24,32), self.rect, border_radius=12)
         pg.draw.rect(surf, (70,70,90), self.rect, 2, border_radius=12)
         x, y = self.rect.x + 16, self.rect.y + 16

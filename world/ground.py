@@ -8,6 +8,7 @@ from data.inventory import ITEMS
 CELL = 56
 
 def _icon_for(item_id: str) -> pg.Surface:
+    """Temporary square icon keyed by item kind + first letters."""
     # quick placeholder icon: colored square with 2-letter tag
     s = pg.Surface((CELL, CELL), pg.SRCALPHA)
     kind = ITEMS[item_id].kind

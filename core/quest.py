@@ -51,7 +51,7 @@ class Quest:
 
 class QuestManager:
     def __init__(self):
-        # Seed with one sample quest
+        # Seed with a single starter quest; expandable later.
         self.quests = {
             "Q_GOB_01": Quest("Q_GOB_01",
                               "Cull Goblins",

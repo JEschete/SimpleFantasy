@@ -28,8 +28,10 @@ class PartyOverlay:
                 elif k == pg.K_BACKSPACE:
                     self.name_buffer = self.name_buffer[:-1]
                 else:
-                    if 32 <= k <= 126 and len(self.name_buffer) < 16:
-                        self.name_buffer += chr(k)
+                    ch = getattr(ev, "unicode", "")
+                    if ch and ch.isprintable() and ch not in "\r\n\t" and len(self.name_buffer) < 16:
+                        if ch.isalnum() or ch in " -_":
+                            self.name_buffer += ch
                 return
             # not renaming
             if k in (pg.K_ESCAPE, pg.K_m):

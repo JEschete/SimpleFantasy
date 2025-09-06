@@ -4,11 +4,13 @@ from settings import GEN1_TYPES, RANK_COST
 # Rank2 = AoE, Rank3 = strong ST, Rank4 = strong AoE
 
 def _s(name, t, r, p=None, power=18, aoe=False, target="enemy", school="BLACK"):
+    """Factory for damage spells."""
     return {"id":name, "name":name, "type":t, "rank":r,
             "mp": p if p is not None else RANK_COST.get(r, 6),
             "power": power, "aoe": aoe, "target": target, "school": school}
 
 def _status(id_, mp, status_id, dur, potency=0, target="enemy", school="BLACK"):
+    """Factory for status / buff spells."""
     return {"id":id_, "name":id_, "type":None, "rank":1, "mp":mp, "power":0,
             "aoe":False, "target":target,
             "apply_status":{"id":status_id,"dur":dur,"pot":potency},

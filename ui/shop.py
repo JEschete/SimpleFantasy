@@ -92,13 +92,15 @@ class Shop:
     def draw(self, surf):
         if not self.opened: return
         self.ui.draw(surf)
-        # Hint / status line
+        # Hint / status line (draw BEFORE tooltip now)
         x = self.ui.rect.x
         y = self.ui.rect.bottom + 6
         day = _today()
         free_available = (self._last_free_reroll_day != day)
         msg = "R: Reroll stock (FREE)" if free_available else "R: Reroll stock (50 Gil)"
         draw_text(surf, msg, x + 4, y, SILVER)
+        # NEW: draw tooltip after hint so tooltip sits on top
+        self.ui.draw_tooltip(surf)
 
     # Wiring from Game (gold + inventory handlers)
     def connect(self, get_gold, add_gold, try_add_to_inventory):
