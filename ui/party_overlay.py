@@ -20,7 +20,7 @@ class PartyOverlay:
             if self.renaming:
                 if k == pg.K_ESCAPE:
                     self.renaming = False; self.name_buffer = ""
-                elif k == pg.K_RETURN:
+                elif k in (pg.K_RETURN, pg.K_KP_ENTER):
                     nm = self.name_buffer.strip()
                     if nm:
                         self.g.party[self.cursor].name = nm[:16]

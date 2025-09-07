@@ -37,7 +37,7 @@ class StartScreen:
         if self.mode == "MAIN":
             if key in (pygame.K_UP, pygame.K_w): self.main_index = (self.main_index - 1) % 3
             elif key in (pygame.K_DOWN, pygame.K_s): self.main_index = (self.main_index + 1) % 3
-            elif key in (pygame.K_RETURN, pygame.K_SPACE):
+            elif key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_SPACE):
                 if self.main_index == 0:
                     self.mode = "NEW_CLASS"
                 elif self.main_index == 1:
@@ -52,7 +52,7 @@ class StartScreen:
                 self.class_index = (self.class_index - 1) % len(self.classes)
             elif key in (pygame.K_DOWN, pygame.K_s):
                 self.class_index = (self.class_index + 1) % len(self.classes)
-            elif key in (pygame.K_RETURN, pygame.K_SPACE):
+            elif key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_SPACE):
                 self.pending_class = self.classes[self.class_index]
                 self.name_buffer = "Hero"
                 self.mode = "NEW_NAME"
@@ -61,7 +61,7 @@ class StartScreen:
                 self.mode = "NEW_CLASS"
             elif key == pygame.K_BACKSPACE:
                 self.name_buffer = self.name_buffer[:-1]
-            elif key == pygame.K_RETURN:
+            elif key in (pygame.K_RETURN, pygame.K_KP_ENTER):
                 # Move to slot selection instead of starting immediately
                 self.mode = "NEW_SLOT"
                 self.saves = list_saves()
@@ -79,7 +79,7 @@ class StartScreen:
                 self.slot_index = (self.slot_index - 1) % len(self.saves)
             elif key in (pygame.K_DOWN, pygame.K_s):
                 self.slot_index = (self.slot_index + 1) % len(self.saves)
-            elif key in (pygame.K_RETURN, pygame.K_SPACE):
+            elif key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_SPACE):
                 cls = self.pending_class or self.classes[self.class_index]
                 name = (self.name_buffer.strip() or "Hero")[:14]
                 slot = self.saves[self.slot_index][0]
@@ -91,7 +91,7 @@ class StartScreen:
                 self.load_index = (self.load_index - 1) % 3
             elif key in (pygame.K_DOWN, pygame.K_s):
                 self.load_index = (self.load_index + 1) % 3
-            elif key == pygame.K_RETURN:
+            elif key in (pygame.K_RETURN, pygame.K_KP_ENTER):
                 slot = self.saves[self.load_index][0]
                 self._req_load_slot = slot
 

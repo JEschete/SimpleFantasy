@@ -23,7 +23,7 @@ class TalentOverlay:
                 self.attr_index = (self.attr_index - 1) % len(STAT_CHOICES)
             elif key in (pg.K_DOWN, pg.K_s):
                 self.attr_index = (self.attr_index + 1) % len(STAT_CHOICES)
-            elif key in (pg.K_RETURN, pg.K_SPACE):
+            elif key in (pg.K_RETURN, pg.K_KP_ENTER, pg.K_SPACE):
                 if self.hero.invest_attribute(STAT_CHOICES[self.attr_index]):
                     pass
         else:
@@ -31,7 +31,7 @@ class TalentOverlay:
                 self.mast_index = (self.mast_index - 1) % len(MASTERY_CHOICES)
             elif key in (pg.K_DOWN, pg.K_s):
                 self.mast_index = (self.mast_index + 1) % len(MASTERY_CHOICES)
-            elif key in (pg.K_RETURN, pg.K_SPACE):
+            elif key in (pg.K_RETURN, pg.K_KP_ENTER, pg.K_SPACE):
                 if self.hero.invest_mastery(MASTERY_CHOICES[self.mast_index]):
                     pass
 

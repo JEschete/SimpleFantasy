@@ -221,7 +221,7 @@ class InputController:
             return
 
         if (not alive) or b.ran_away:
-            if key == pygame.K_RETURN:
+            if key in (pygame.K_RETURN, pygame.K_KP_ENTER):
                 if (not b.ran_away) and not b.victory_loot_done:
                     # XP share: all living party members
                     xp_gain = b.total_xp_yield

@@ -182,7 +182,7 @@ class Game:
         else:
             if not self.shop.opened:
                 self.overworld.update(dt, keys)
-                if keys[pygame.K_RETURN] and self.overworld.near_shop():
+                if (keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]) and self.overworld.near_shop():
                     if not self.shop.opened:
                         self.inv_open = True
                         self.inv_ui.reload_from_hero()

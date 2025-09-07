@@ -22,7 +22,7 @@ class Tavern:
             self.cursor = (self.cursor - 1) % len(HIRE_OPTIONS)
         elif key in (pg.K_DOWN, pg.K_s):
             self.cursor = (self.cursor + 1) % len(HIRE_OPTIONS)
-        elif key in (pg.K_RETURN, pg.K_SPACE):
+        elif key in (pg.K_RETURN, pg.K_KP_ENTER, pg.K_SPACE):
             if len(self.g.party) >= 4:
                 if hasattr(self.g.overworld, "set_toast"): self.g.overworld.set_toast("Party full.")
                 return

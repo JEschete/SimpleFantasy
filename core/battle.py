@@ -474,7 +474,7 @@ class Battle:
                 mr.move(-1)
             elif key in (pygame.K_DOWN, pygame.K_s):
                 mr.move(+1)
-            elif key in (pygame.K_RETURN, pygame.K_SPACE):
+            elif key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_SPACE):
                 sel_idx = mr.selected_index()
                 if 0 <= sel_idx < len(mr.items):
                     label = mr.items[sel_idx]
@@ -503,7 +503,7 @@ class Battle:
                 m.move(-1)
             elif key in (pygame.K_DOWN, pygame.K_s):
                 m.move(+1)
-            elif key in (pygame.K_RETURN, pygame.K_SPACE):
+            elif key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_SPACE):
                 idx = m.selected_index()
                 if hasattr(self, "_magic_index_map") and 0 <= idx < len(self._magic_index_map):
                     self.cast_spell(self._magic_index_map[idx])
@@ -516,7 +516,7 @@ class Battle:
                 m.move(-1)
             elif key in (pygame.K_DOWN, pygame.K_s):
                 m.move(+1)
-            elif key in (pygame.K_RETURN, pygame.K_SPACE):
+            elif key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_SPACE):
                 items = self.hero.inventory.all_items()
                 if items:
                     item_id, _ = items[m.selected_index()]
